@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Nyx | AI Crypto Trading{% endblock %}
+
+{% block content %}
+<div class="page-enter" style="min-height: 100vh; background: var(--bg); overflow: hidden; position: relative;">
+    <div style="position: absolute; top: -200px; left: 50%; transform: translateX(-50%); width: 1200px; height: 600px; background: radial-gradient(ellipse at center, oklch(0.82 0.19 145 / 0.18), transparent 60%); pointer-events: none; z-index: 0;"></div>
+
+    <nav style="position: relative; z-index: 10; padding: 20px 48px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); gap: 24px;">
+        <div class="flex aic gap-2">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 20 L4 4 L12 14 L20 4 L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle cx="12" cy="14" r="2" fill="oklch(0.82 0.19 145)"></circle>
+            </svg>
+            <span style="font-weight: 600; font-size: 16px; letter-spacing: -0.01em;">Nyx</span>
+            <span class="badge badge-line" style="margin-left: 8px;">BETA</span>
+        </div>
+        <div class="landing-nav-links flex aic gap-6" style="font-size: 13px; color: var(--text-2);">
+            <a href="#features">How it works</a>
+            <a href="#agents">Agents</a>
+            <a href="#performance">Performance</a>
+            <a href="#pricing">Pricing</a>
+        </div>
+        <div class="flex aic gap-3">
+            <a class="btn btn-quiet" href="{% url 'login' %}">Sign in</a>
+            <a class="btn btn-primary" href="{% url 'signup' %}">
+                Get started
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M13 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </nav>
+
+    <section class="landing-hero-grid" style="position: relative; z-index: 1; padding: 100px 48px 60px; text-align: center; max-width: 1100px; margin: 0 auto;">
+        <div class="badge badge-line" style="margin-bottom: 28px; padding: 6px 12px; font-size: 12px;">
+            <span class="live-dot"></span>
+            Live · 12,408 portfolios managed by Nyx agents
+        </div>
+        <h1 style="font-size: clamp(48px, 7vw, 96px); line-height: 0.98; font-weight: 500; letter-spacing: -0.04em; margin-bottom: 28px;">
+            Crypto investing,<br>
+            <span style="color: var(--text-3);">handled by </span>
+            <span style="background: linear-gradient(180deg, var(--accent), oklch(0.62 0.19 145)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">autonomous AI</span>.
+        </h1>
+        <p style="font-size: 19px; color: var(--text-2); max-width: 620px; margin: 0 auto 40px; line-height: 1.5;">
+            You set the goal. Nyx's agents research the market, build a strategy, and execute trades — 24/7. Built for the rest of us, not Wall Street.
+        </p>
+        <div class="flex aic jcc gap-3" style="margin-bottom: 80px;">
+            <a class="btn btn-primary" style="padding: 14px 24px; font-size: 14px;" href="{% url 'signup' %}">
+                Start with $50
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14M13 5l7 7-7 7"></path>
+                </svg>
+            </a>
+            <a class="btn btn-ghost" style="padding: 14px 24px; font-size: 14px;" href="{% url 'dashboard' %}">
+                See live demo
+            </a>
+        </div>
+
+        <div class="card" style="overflow: hidden; padding: 0; background: var(--bg-2); text-align: left;">
+            <div class="top-market-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); border-bottom: 1px solid var(--line);">
+                {% for coin in top_market %}
+                    <div style="padding: 16px 18px; border-right: {% if not forloop.last %}1px solid var(--line){% else %}none{% endif %}; text-align: left;">
+                        <div class="flex aic jcb">
+                            <div>
+                                <div style="font-size: 11px; color: var(--text-3); letter-spacing: 0.05em;">{{ coin.sym }}/USD</div>
+                                <div class="num" style="margin-top: 2px;">{{ coin.display_price }}</div>
+                            </div>
+                            <svg width="50" height="24" viewBox="0 0 50 24">
+                                <polyline points="{{ coin.mini_sparkline }}" fill="none" stroke="{% if coin.is_up %}var(--accent){% else %}var(--loss){% endif %}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                            </svg>
+                        </div>
+                        <div class="num {% if coin.is_up %}up{% else %}down{% endif %}" style="font-size: 11px; margin-top: 4px;">
+                            {{ coin.display_change }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div style="padding: 8px 18px 0;">
+                <div class="flex aic jcb" style="margin-bottom: 4px;">
+                    <div class="flex aic gap-2">
+                        <div class="live-dot"></div>
+                        <span style="font-size: 12px; color: var(--text-2);">Nyx Balanced agent · last 30 days</span>
+                    </div>
+                    <span class="num up" style="font-size: 13px;">+18.42%</span>
+                </div>
+                <svg width="100%" height="72" viewBox="0 0 900 72" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="hero-grad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35"></stop>
+                            <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+                        </linearGradient>
+                    </defs>
+                    <path d="{{ hero_chart.area_path }}" fill="url(#hero-grad)"></path>
+                    <path d="{{ hero_chart.line_path }}" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <circle cx="{{ hero_chart.last_x }}" cy="{{ hero_chart.last_y }}" r="6" fill="var(--accent)" opacity="0.2"></circle>
+                    <circle cx="{{ hero_chart.last_x }}" cy="{{ hero_chart.last_y }}" r="3" fill="var(--accent)"></circle>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 40px 48px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);">
+        <div class="flex aic jcb" style="max-width: 1100px; margin: 0 auto; flex-wrap: wrap; gap: 24px;">
+            <span class="uppercase muted">Built on the rails of</span>
+            <div class="flex aic gap-8" style="flex-wrap: wrap; color: var(--text-3); font-weight: 500; font-size: 14px; letter-spacing: -0.01em;">
+                <span>Coinbase Custody</span>
+                <span>·</span>
+                <span>Fireblocks</span>
+                <span>·</span>
+                <span>Chainlink Oracles</span>
+                <span>·</span>
+                <span>SOC 2 Type II</span>
+                <span>·</span>
+                <span>Insured to $250K</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" style="padding: 120px 48px; max-width: 1200px; margin: 0 auto;">
+        <div style="margin-bottom: 64px; max-width: 700px;">
+            <span class="uppercase" style="color: var(--accent);">The product</span>
+            <h2 style="font-size: 48px; line-height: 1.05; font-weight: 500; letter-spacing: -0.03em; margin-top: 12px;">
+                Three steps. Then the agents take over.
+            </h2>
+        </div>
+        <div class="three-col-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;">
+            <div style="padding: 32px; background: var(--bg); min-height: 280px;">
+                <div class="flex aic jcb" style="margin-bottom: 24px;">
+                    <span class="mono" style="color: var(--text-4); font-size: 13px;">01</span>
+                    <span style="color: var(--accent);">⛨</span>
+                </div>
+                <h3 style="font-size: 22px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 12px;">Pick your risk</h3>
+                <p style="color: var(--text-2); font-size: 14px; line-height: 1.55;">Conservative, balanced, or aggressive. Or build a custom mandate in plain English.</p>
+            </div>
+            <div style="padding: 32px; background: var(--bg); min-height: 280px;">
+                <div class="flex aic jcb" style="margin-bottom: 24px;">
+                    <span class="mono" style="color: var(--text-4); font-size: 13px;">02</span>
+                    <span style="color: var(--accent);">$</span>
+                </div>
+                <h3 style="font-size: 22px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 12px;">Fund your account</h3>
+                <p style="color: var(--text-2); font-size: 14px; line-height: 1.55;">Connect a card, bank, or existing wallet. Start with as little as $50. Withdraw anytime.</p>
+            </div>
+            <div style="padding: 32px; background: var(--bg); min-height: 280px;">
+                <div class="flex aic jcb" style="margin-bottom: 24px;">
+                    <span class="mono" style="color: var(--text-4); font-size: 13px;">03</span>
+                    <span style="color: var(--accent);">✦</span>
+                </div>
+                <h3 style="font-size: 22px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 12px;">Watch agents work</h3>
+                <p style="color: var(--text-2); font-size: 14px; line-height: 1.55;">Nyx's agents research, allocate, and rebalance — and explain every move in your feed.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="agents" style="padding: 60px 48px 120px; max-width: 1200px; margin: 0 auto;">
+        <div class="flex jcb" style="margin-bottom: 48px; align-items: flex-end; gap: 32px; flex-wrap: wrap;">
+            <div style="max-width: 600px;">
+                <span class="uppercase" style="color: var(--accent);">The agents</span>
+                <h2 style="font-size: 48px; line-height: 1.05; font-weight: 500; letter-spacing: -0.03em; margin-top: 12px;">
+                    A team of specialists, not a single black box.
+                </h2>
+            </div>
+            <p style="color: var(--text-2); font-size: 15px; max-width: 380px;">
+                Each agent handles one job. They debate, vote, and write down their reasoning so you can read it like a journal.
+            </p>
+        </div>
+        <div class="dashboard-grid-main" style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px;">
+            <div class="card" style="padding: 32px; position: relative; overflow: hidden;">
+                <div class="badge badge-accent" style="margin-bottom: 16px;">Lead agent</div>
+                <h3 style="font-size: 32px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 12px;">Atlas</h3>
+                <p style="color: var(--text-2); margin-bottom: 28px; font-size: 15px; max-width: 480px;">
+                    Sets your portfolio's overall direction. Ingests on-chain flows, ETF data, macro events, and social sentiment to allocate across themes.
+                </p>
+                <div class="col gap-2" style="font-size: 13px;">
+                    <div style="display: flex; gap: 12px; padding: 10px 12px; border-radius: 8px; background: var(--bg-2); border-left: 2px solid var(--accent);">
+                        <span class="mono muted" style="font-size: 11px; flex-shrink: 0; padding-top: 2px;">2 min ago</span>
+                        <span style="font-size: 13px; color: var(--text-2); line-height: 1.5;">Increased L2 exposure: ARB +3%, OP +2%. Reasoning: bridge volume up 41% week-over-week.</span>
+                    </div>
+                    <div style="display: flex; gap: 12px; padding: 10px 12px; border-radius: 8px; background: var(--bg-2); border-left: 2px solid var(--accent);">
+                        <span class="mono muted" style="font-size: 11px; flex-shrink: 0; padding-top: 2px;">14 min ago</span>
+                        <span style="font-size: 13px; color: var(--text-2); line-height: 1.5;">Trimmed BTC by 1.5%. Reasoning: ETF inflows decelerating; rotating to high-beta.</span>
+                    </div>
+                    <div style="display: flex; gap: 12px; padding: 10px 12px; border-radius: 8px; background: var(--bg-2); border-left: 2px solid var(--accent);">
+                        <span class="mono muted" style="font-size: 11px; flex-shrink: 0; padding-top: 2px;">1 hr ago</span>
+                        <span style="font-size: 13px; color: var(--text-2); line-height: 1.5;">Held SOL through volatility. Reasoning: net stablecoin issuance still positive.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col gap-3">
+                <div class="card" style="padding: 20px; display: flex; align-items: flex-start; gap: 16px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">⚡</div>
+                    <div>
+                        <div class="flex aic gap-2">
+                            <h4 style="font-size: 15px; font-weight: 600;">Hermes</h4>
+                            <span class="muted" style="font-size: 12px;">· Execution</span>
+                        </div>
+                        <p style="color: var(--text-2); font-size: 13px; margin-top: 4px; line-height: 1.5;">Splits orders, hunts liquidity, slips less than 0.08% on average.</p>
+                    </div>
+                </div>
+                <div class="card" style="padding: 20px; display: flex; align-items: flex-start; gap: 16px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">⛨</div>
+                    <div>
+                        <div class="flex aic gap-2">
+                            <h4 style="font-size: 15px; font-weight: 600;">Cassandra</h4>
+                            <span class="muted" style="font-size: 12px;">· Risk</span>
+                        </div>
+                        <p style="color: var(--text-2); font-size: 13px; margin-top: 4px; line-height: 1.5;">Watches drawdown, vol, and correlation. Pulls the brakes when things break.</p>
+                    </div>
+                </div>
+                <div class="card" style="padding: 20px; display: flex; align-items: flex-start; gap: 16px;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">◉</div>
+                    <div>
+                        <div class="flex aic gap-2">
+                            <h4 style="font-size: 15px; font-weight: 600;">Argus</h4>
+                            <span class="muted" style="font-size: 12px;">· Research</span>
+                        </div>
+                        <p style="color: var(--text-2); font-size: 13px; margin-top: 4px; line-height: 1.5;">Reads every announcement, decodes every contract. Surfaces signals to Atlas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="marketing-footer" style="border-top: 1px solid var(--line); padding: 48px; display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 32px; max-width: 1400px; margin: 0 auto;">
+        <div>
+            <div class="flex aic gap-2" style="margin-bottom: 12px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 20 L4 4 L12 14 L20 4 L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <circle cx="12" cy="14" r="2" fill="oklch(0.82 0.19 145)"></circle>
+                </svg>
+                <span style="font-weight: 600;">Nyx</span>
+            </div>
+            <p class="muted" style="font-size: 13px; max-width: 280px; margin-bottom: 16px;">
+                Autonomous crypto investing for the rest of us.
+            </p>
+        </div>
+        <div>
+            <div class="uppercase muted" style="margin-bottom: 12px;">Product</div>
+            <div class="col gap-2">
+                <a style="font-size: 13px; color: var(--text-2);">Agents</a>
+                <a style="font-size: 13px; color: var(--text-2);">Strategies</a>
+                <a style="font-size: 13px; color: var(--text-2);">Performance</a>
+                <a style="font-size: 13px; color: var(--text-2);">Security</a>
+            </div>
+        </div>
+        <div>
+            <div class="uppercase muted" style="margin-bottom: 12px;">Resources</div>
+            <div class="col gap-2">
+                <a style="font-size: 13px; color: var(--text-2);">Docs</a>
+                <a style="font-size: 13px; color: var(--text-2);">Blog</a>
+                <a style="font-size: 13px; color: var(--text-2);">Whitepaper</a>
+                <a style="font-size: 13px; color: var(--text-2);">Status</a>
+            </div>
+        </div>
+        <div>
+            <div class="uppercase muted" style="margin-bottom: 12px;">Company</div>
+            <div class="col gap-2">
+                <a style="font-size: 13px; color: var(--text-2);">About</a>
+                <a style="font-size: 13px; color: var(--text-2);">Careers</a>
+                <a style="font-size: 13px; color: var(--text-2);">Press</a>
+                <a style="font-size: 13px; color: var(--text-2);">Contact</a>
+            </div>
+        </div>
+        <div style="grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 24px; display: flex; justify-content: space-between; color: var(--text-3); font-size: 12px; gap: 16px; flex-wrap: wrap;">
+            <span>© 2026 Nyx Labs, Inc. Not investment advice. Crypto involves risk of loss.</span>
+            <span>v2.4 · Built in Brooklyn & Lisbon</span>
+        </div>
+    </footer>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "accounts/app_shell.html" %}
+
+{% block shell_actions %}
+<button class="btn btn-ghost" type="button" style="font-size: 12px;">Mark all read</button>
+<button class="btn btn-ghost" type="button" style="font-size: 12px;">+ New rule</button>
+{% endblock %}
+
+{% block shell_content %}
+<div class="flex gap-2" style="margin-bottom: 20px; flex-wrap: wrap;">
+    <a href="?filter=all" class="chip {% if current_filter == 'all' %}active{% endif %}">All <span class="muted">{{ filter_counts.all }}</span></a>
+    <a href="?filter=trade" class="chip {% if current_filter == 'trade' %}active{% endif %}">Trades <span class="muted">{{ filter_counts.trade }}</span></a>
+    <a href="?filter=rebalance" class="chip {% if current_filter == 'rebalance' %}active{% endif %}">Rebalances <span class="muted">{{ filter_counts.rebalance }}</span></a>
+    <a href="?filter=risk" class="chip {% if current_filter == 'risk' %}active{% endif %}">Risk <span class="muted">{{ filter_counts.risk }}</span></a>
+    <a href="?filter=signal" class="chip {% if current_filter == 'signal' %}active{% endif %}">Signals <span class="muted">{{ filter_counts.signal }}</span></a>
+    <a href="?filter=price" class="chip {% if current_filter == 'price' %}active{% endif %}">Price alerts <span class="muted">{{ filter_counts.price }}</span></a>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 320px; gap: 20px;">
+    <div class="card" style="overflow: hidden;">
+        {% for alert in alerts %}
+            <div style="padding: 18px 20px; border-bottom: {% if not forloop.last %}1px solid var(--line){% else %}none{% endif %}; background: {% if alert.unread %}var(--bg-2){% else %}transparent{% endif %}; display: flex; gap: 16px;">
+                <div style="width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0; background: {% if alert.severity == 'warn' %}oklch(0.82 0.16 85 / 0.15){% elif alert.severity == 'ok' %}var(--accent-soft){% else %}oklch(0.78 0.12 230 / 0.15){% endif %}; color: {% if alert.severity == 'warn' %}var(--warn){% elif alert.severity == 'ok' %}var(--accent){% else %}var(--info){% endif %}; display: flex; align-items: center; justify-content: center;">
+                    {% if alert.type == 'trade' %}⚡{% elif alert.type == 'rebalance' %}↗{% elif alert.type == 'risk' %}⛨{% elif alert.type == 'signal' %}✦{% elif alert.type == 'price' %}◌{% else %}$ {% endif %}
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <div class="flex jcb aic" style="margin-bottom: 4px; gap: 12px;">
+                        <div class="flex aic gap-2">
+                            <span style="font-weight: 500; font-size: 14px;">{{ alert.title }}</span>
+                            {% if alert.unread %}<span style="width: 6px; height: 6px; border-radius: 50%; background: var(--accent);"></span>{% endif %}
+                        </div>
+                        <span class="mono muted" style="font-size: 11px;">{{ alert.time }}</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-2); line-height: 1.5; margin-bottom: 6px;">{{ alert.body }}</p>
+                    {% if alert.agent %}<span class="muted" style="font-size: 11px;">{{ alert.agent }}</span>{% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="col gap-3">
+        <div class="card" style="padding: 20px;">
+            <h3 style="font-size: 14px; font-weight: 500; margin-bottom: 12px;">Notification preferences</h3>
+            <div class="col gap-3">
+                <div class="flex jcb aic" style="font-size: 13px;"><span>Trade fills</span><div class="flex gap-2 aic"><span class="badge badge-accent">E</span><span class="badge badge-line">P</span></div></div>
+                <div class="flex jcb aic" style="font-size: 13px;"><span>Rebalances</span><div class="flex gap-2 aic"><span class="badge badge-accent">E</span><span class="badge badge-accent">P</span></div></div>
+                <div class="flex jcb aic" style="font-size: 13px;"><span>Risk events</span><div class="flex gap-2 aic"><span class="badge badge-accent">E</span><span class="badge badge-accent">P</span></div></div>
+                <div class="flex jcb aic" style="font-size: 13px;"><span>Daily summary</span><div class="flex gap-2 aic"><span class="badge badge-line">E</span><span class="badge badge-line">P</span></div></div>
+                <div class="flex jcb aic" style="font-size: 13px;"><span>Price alerts</span><div class="flex gap-2 aic"><span class="badge badge-accent">E</span><span class="badge badge-accent">P</span></div></div>
+            </div>
+            <div class="muted" style="font-size: 11px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line);">E = email · P = push</div>
+        </div>
+
+        <div class="card" style="padding: 20px;">
+            <h3 style="font-size: 14px; font-weight: 500; margin-bottom: 4px;">Quiet hours</h3>
+            <p class="muted" style="font-size: 12px; margin-bottom: 12px;">Only critical risk events come through.</p>
+            <div class="flex gap-2">
+                <input class="input num" value="22:00" style="flex: 1;">
+                <span class="muted" style="align-self: center;">to</span>
+                <input class="input num" value="07:00" style="flex: 1;">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

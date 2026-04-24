@@ -1,0 +1,90 @@
+{% extends "accounts/app_shell.html" %}
+
+{% block shell_actions %}
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="btn btn-quiet" type="submit">Sign out</button>
+</form>
+{% endblock %}
+
+{% block shell_content %}
+<div style="display: grid; grid-template-columns: 200px 1fr; gap: 32px;">
+    <div class="col gap-1" style="position: sticky; top: 32px; align-self: start;">
+        <a href="?tab=account" class="nav-item {% if settings_tab == 'account' %}active{% endif %}" style="width: 100%; justify-content: flex-start;">Account</a>
+        <a href="?tab=security" class="nav-item {% if settings_tab == 'security' %}active{% endif %}" style="width: 100%; justify-content: flex-start;">Security</a>
+        <a href="?tab=agents" class="nav-item {% if settings_tab == 'agents' %}active{% endif %}" style="width: 100%; justify-content: flex-start;">Agent mandate</a>
+        <a href="?tab=api" class="nav-item {% if settings_tab == 'api' %}active{% endif %}" style="width: 100%; justify-content: flex-start;">API keys</a>
+        <a href="?tab=billing" class="nav-item {% if settings_tab == 'billing' %}active{% endif %}" style="width: 100%; justify-content: flex-start;">Billing</a>
+    </div>
+
+    <div class="col gap-3" style="max-width: 720px;">
+        {% if settings_tab == 'account' %}
+            <div class="card" style="padding: 24px;">
+                <div style="margin-bottom: 16px;"><h3 style="font-size: 15px; font-weight: 500;">Profile</h3><p class="muted" style="font-size: 12px; margin-top: 2px;">How you appear in the app.</p></div>
+                <div class="flex aic gap-4" style="margin-bottom: 20px;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, oklch(0.6 0.18 145), oklch(0.4 0.12 240));"></div>
+                    <div><button class="btn btn-ghost" type="button" style="font-size: 12px;">Upload</button><p class="muted" style="font-size: 11px; margin-top: 8px;">PNG or JPG, up to 2MB</p></div>
+                </div>
+                <div class="stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div><label class="label">Full name</label><input class="input" value="Alex Morgan"></div>
+                    <div><label class="label">Display name</label><input class="input" value="alex"></div>
+                    <div style="grid-column: 1 / -1;"><label class="label">Email</label><input class="input" value="{{ user.email }}"></div>
+                    <div><label class="label">Country</label><select class="input"><option>United States</option></select></div>
+                    <div><label class="label">Timezone</label><select class="input"><option>America/New_York</option></select></div>
+                </div>
+            </div>
+            <div class="card" style="padding: 24px;">
+                <div style="margin-bottom: 16px;"><h3 style="font-size: 15px; font-weight: 500;">Display</h3><p class="muted" style="font-size: 12px; margin-top: 2px;">Aesthetic preferences.</p></div>
+                <div class="flex jcb aic" style="padding: 12px 0; border-bottom: 1px solid var(--line);"><div><div style="font-size: 13px;">Currency</div></div><select class="input" style="width: 140px;"><option>USD</option></select></div>
+                <div class="flex jcb aic" style="padding: 12px 0; border-bottom: 1px solid var(--line);"><div><div style="font-size: 13px;">Number format</div></div><select class="input" style="width: 140px;"><option>1,000.00</option></select></div>
+                <div class="flex jcb aic" style="padding: 12px 0;"><div><div style="font-size: 13px;">Hide small balances</div></div><span class="badge badge-accent">On</span></div>
+            </div>
+        {% elif settings_tab == 'security' %}
+            <div class="card" style="padding: 24px;">
+                <div style="margin-bottom: 16px;"><h3 style="font-size: 15px; font-weight: 500;">Password</h3><p class="muted" style="font-size: 12px; margin-top: 2px;">Last changed 47 days ago.</p></div>
+                <div class="col gap-3">
+                    <div><label class="label">Current password</label><input class="input" type="password"></div>
+                    <div><label class="label">New password</label><input class="input" type="password"></div>
+                    <button class="btn btn-primary" type="button" style="align-self: flex-start;">Update password</button>
+                </div>
+            </div>
+            <div class="card" style="padding: 24px;">
+                <div style="margin-bottom: 16px;"><h3 style="font-size: 15px; font-weight: 500;">Two-factor authentication</h3><p class="muted" style="font-size: 12px; margin-top: 2px;">Required for withdrawals over $1K.</p></div>
+                <div class="flex jcb aic" style="padding: 12px 0; border-bottom: 1px solid var(--line);"><div><div style="font-size: 13px;">Authenticator app</div><div class="muted" style="font-size: 11px; margin-top: 2px;">Synced with 1Password</div></div><span class="badge badge-accent">Enabled</span></div>
+                <div class="flex jcb aic" style="padding: 12px 0; border-bottom: 1px solid var(--line);"><div><div style="font-size: 13px;">SMS backup</div><div class="muted" style="font-size: 11px; margin-top: 2px;">Recommended off - SIM swap risk</div></div><span class="badge badge-line">Off</span></div>
+                <div class="flex jcb aic" style="padding: 12px 0;"><div><div style="font-size: 13px;">Hardware key</div></div><button class="btn btn-ghost" type="button" style="font-size: 12px;">Add YubiKey</button></div>
+            </div>
+        {% elif settings_tab == 'agents' %}
+            <div class="card" style="padding: 24px;">
+                <div style="margin-bottom: 16px;"><h3 style="font-size: 15px; font-weight: 500;">Mandate</h3><p class="muted" style="font-size: 12px; margin-top: 2px;">The rules your agents must follow. Cassandra enforces these.</p></div>
+                <div class="flex jcb aic" style="padding: 12px 0; border-bottom: 1px solid var(--line);"><span>Max drawdown</span><input class="input num" value="-25%" style="width: 100px;"></div>
+                <div class="flex jcb aic" style="padding: 12px 0; border-bottom: 1px solid var(--line);"><span>Max single position</span><input class="input num" value="35%" style="width: 100px;"></div>
+                <div class="flex jcb aic" style="padding: 12px 0; border-bottom: 1px solid var(--line);"><span>Stablecoin floor</span><input class="input num" value="5%" style="width: 100px;"></div>
+                <div class="flex jcb aic" style="padding: 12px 0;"><span>Allowed asset universe</span><button class="btn btn-ghost" type="button" style="font-size: 12px;">Top 50 by mcap · Edit</button></div>
+            </div>
+        {% elif settings_tab == 'api' %}
+            <div class="card" style="padding: 24px;">
+                <div style="margin-bottom: 16px;"><h3 style="font-size: 15px; font-weight: 500;">API keys</h3><p class="muted" style="font-size: 12px; margin-top: 2px;">For algo traders. Read-only by default.</p></div>
+                <div class="flex jcb aic" style="padding: 14px 0; border-bottom: 1px solid var(--line);"><div><div style="font-size: 13px; font-weight: 500;">Personal trading bot</div><div class="muted" style="font-size: 11px; margin-top: 2px;">nyx_...a4f2 · Trade · Read · Last used 2 hours ago</div></div><button class="btn btn-quiet" type="button" style="font-size: 12px; color: var(--loss);">Revoke</button></div>
+                <div class="flex jcb aic" style="padding: 14px 0;"><div><div style="font-size: 13px; font-weight: 500;">Portfolio tracker</div><div class="muted" style="font-size: 11px; margin-top: 2px;">nyx_...b2c1 · Read · Last used yesterday</div></div><button class="btn btn-quiet" type="button" style="font-size: 12px; color: var(--loss);">Revoke</button></div>
+                <button class="btn btn-primary" type="button" style="font-size: 12px; margin-top: 16px;">+ Create API key</button>
+            </div>
+        {% else %}
+            <div class="card" style="padding: 24px;">
+                <div style="margin-bottom: 16px;"><h3 style="font-size: 15px; font-weight: 500;">Plan</h3><p class="muted" style="font-size: 12px; margin-top: 2px;">You're on the Trader plan.</p></div>
+                <div style="padding: 20px; background: linear-gradient(135deg, oklch(0.21 0.04 145), var(--surface)); border-radius: 12px; border: 1px solid var(--line);">
+                    <div class="flex jcb aic">
+                        <div><div class="flex aic gap-2"><span style="font-size: 18px; font-weight: 500;">Trader</span><span class="badge badge-accent">Active</span></div><p class="muted" style="font-size: 12px; margin-top: 4px;">0.65% / yr on AUM · billed monthly</p></div>
+                        <button class="btn btn-ghost" type="button" style="font-size: 12px;">Change plan</button>
+                    </div>
+                    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line);">
+                        <div><div class="muted uppercase" style="margin-bottom: 4px;">This month</div><div class="num">$24.18</div></div>
+                        <div><div class="muted uppercase" style="margin-bottom: 4px;">YTD</div><div class="num">$87.42</div></div>
+                        <div><div class="muted uppercase" style="margin-bottom: 4px;">Next bill</div><div class="num">May 1</div></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

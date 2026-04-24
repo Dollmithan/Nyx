@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | Nyx{% endblock %}
+
+{% block content %}
+<div class="auth-shell" style="min-height: 100vh; display: grid; grid-template-columns: 1fr 1.1fr; background: var(--bg);">
+    <div class="auth-shell-panel grid-bg" style="position: relative; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--line); overflow: hidden;">
+        <a href="{% url 'landing' %}" class="flex aic gap-2" style="position: relative; z-index: 2;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 20 L4 4 L12 14 L20 4 L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle cx="12" cy="14" r="2" fill="oklch(0.82 0.19 145)"></circle>
+            </svg>
+            <span style="font-weight: 600; font-size: 16px;">Nyx</span>
+        </a>
+        <div style="position: relative; z-index: 2; max-width: 440px;">
+            <div style="margin-bottom: 24px; color: var(--accent); font-size: 28px;">✦</div>
+            <p style="font-size: 26px; line-height: 1.25; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 24px;">
+                "I checked Nyx for the first time in three weeks. It had quietly rebalanced four times, dodged a 12% chop, and the journal explained every move."
+            </p>
+            <div class="flex aic gap-3">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, oklch(0.6 0.18 145), oklch(0.4 0.12 240));"></div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 500;">Maya R.</div>
+                    <div class="muted" style="font-size: 12px;">Software engineer · Nyx user since '25</div>
+                </div>
+            </div>
+        </div>
+        <div style="position: relative; z-index: 2; display: flex; gap: 20px; font-size: 12px; color: var(--text-3); flex-wrap: wrap;">
+            <span>SOC 2 Type II</span><span>Insured to $250K</span><span>Cold storage</span>
+        </div>
+    </div>
+    <div style="padding: 48px 64px; display: flex; align-items: center; justify-content: center;">
+        <div class="page-enter" style="width: 100%; max-width: 380px;">
+            <div style="margin-bottom: 32px;">
+                <h1 style="font-size: 32px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 8px;">Welcome back.</h1>
+                <p class="muted">Your agents have been busy. Let's see what they did.</p>
+            </div>
+            <form class="col gap-4" method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="card" style="padding: 12px 14px; border-color: var(--loss); color: var(--loss);">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <div>
+                    <label class="label" for="{{ form.username.id_for_label }}">Email</label>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 14px; color: var(--text-3);">✉</span>
+                        {{ form.username.as_widget|safe }}
+                    </div>
+                    {% for error in form.username.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+                </div>
+                <div>
+                    <div class="flex jcb">
+                        <label class="label" for="{{ form.password.id_for_label }}">Password</label>
+                        <span class="muted" style="font-size: 12px;">Forgot?</span>
+                    </div>
+                    <div style="position: relative;">
+                        <span style="position: absolute; left: 14px; top: 14px; color: var(--text-3);">⛨</span>
+                        {{ form.password.as_widget|safe }}
+                    </div>
+                    {% for error in form.password.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+                </div>
+                <label class="flex aic gap-2" style="font-size: 13px; color: var(--text-2); cursor: pointer;">
+                    <input type="checkbox" checked style="accent-color: oklch(0.82 0.19 145);">
+                    Keep me signed in for 30 days
+                </label>
+                {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+                <button class="btn btn-primary" type="submit" style="justify-content: center; padding: 12px 16px;">
+                    Sign in
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M13 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </form>
+            <div class="flex aic gap-3" style="margin: 24px 0; color: var(--text-3);">
+                <div class="hr" style="flex: 1;"></div>
+                <span style="font-size: 11px;">OR</span>
+                <div class="hr" style="flex: 1;"></div>
+            </div>
+            <div class="col gap-2">
+                <button class="btn btn-ghost" type="button" style="justify-content: center; padding: 12px;">
+                    <span style="font-weight: 600; margin-right: 4px;">G</span> Continue with Google
+                </button>
+                <button class="btn btn-ghost" type="button" style="justify-content: center; padding: 12px;">
+                    Connect wallet
+                </button>
+            </div>
+            <p class="muted" style="font-size: 13px; text-align: center; margin-top: 28px;">
+                New here? <a href="{% url 'signup' %}" style="color: var(--accent);">Create an account</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

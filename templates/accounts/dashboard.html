@@ -1,0 +1,198 @@
+{% extends "accounts/app_shell.html" %}
+
+{% block shell_actions %}
+<button class="btn btn-ghost" type="button">+ Deposit</button>
+<button class="btn btn-primary" type="button">✦ Ask Nyx</button>
+{% endblock %}
+
+{% block shell_content %}
+<div class="dashboard-hero-grid" style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="card" style="padding: 28px; position: relative; overflow: hidden;">
+                    <div class="flex jcb" style="margin-bottom: 8px; flex-wrap: wrap; gap: 12px;">
+                        <span class="uppercase muted">Total portfolio value</span>
+                        <div class="flex aic gap-1" style="flex-wrap: wrap;">
+                            <button class="chip" style="padding: 3px 9px; font-size: 11px;">1D</button>
+                            <button class="chip" style="padding: 3px 9px; font-size: 11px;">1W</button>
+                            <button class="chip active" style="padding: 3px 9px; font-size: 11px;">1M</button>
+                            <button class="chip" style="padding: 3px 9px; font-size: 11px;">3M</button>
+                            <button class="chip" style="padding: 3px 9px; font-size: 11px;">1Y</button>
+                            <button class="chip" style="padding: 3px 9px; font-size: 11px;">All</button>
+                        </div>
+                    </div>
+                    <div class="flex aic gap-3" style="margin-bottom: 4px;">
+                        <span class="num" style="font-size: 44px; letter-spacing: -0.025em;">{{ portfolio_total }}</span>
+                    </div>
+                    <div class="flex aic gap-3" style="margin-bottom: 24px;">
+                        <span class="num {% if portfolio_positive %}up{% else %}down{% endif %}" style="font-size: 14px;">
+                            {% if portfolio_positive %}+{% endif %}{{ portfolio_day_delta }} ({{ portfolio_day_pct }})
+                        </span>
+                        <span class="muted" style="font-size: 13px;">· today</span>
+                    </div>
+                    <svg width="100%" height="180" viewBox="0 0 920 180" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="portfolio-grad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.35"></stop>
+                                <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+                            </linearGradient>
+                        </defs>
+                        <path d="{{ portfolio_chart.area_path }}" fill="url(#portfolio-grad)"></path>
+                        <path d="{{ portfolio_chart.line_path }}" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <circle cx="{{ portfolio_chart.last_x }}" cy="{{ portfolio_chart.last_y }}" r="6" fill="var(--accent)" opacity="0.2"></circle>
+                        <circle cx="{{ portfolio_chart.last_x }}" cy="{{ portfolio_chart.last_y }}" r="3" fill="var(--accent)"></circle>
+                    </svg>
+                </div>
+
+                <div class="card" style="padding: 24px;">
+                    <div class="flex jcb" style="margin-bottom: 16px;">
+                        <span class="uppercase muted">Allocation</span>
+                        <span class="muted" style="font-size: 12px; cursor: pointer;">Rebalance</span>
+                    </div>
+                    <div class="flex aic gap-4">
+                        <div style="position: relative;">
+                            <div style="width: 150px; height: 150px; border-radius: 50%; background: {{ allocation_gradient }};"></div>
+                            <div style="position: absolute; inset: 14px; background: var(--surface); border-radius: 50%;"></div>
+                            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                                <span class="muted" style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;">Holdings</span>
+                                <span class="num" style="font-size: 22px; letter-spacing: -0.02em;">{{ allocation_segments|length }}</span>
+                            </div>
+                        </div>
+                        <div class="col gap-2" style="flex: 1;">
+                            {% for segment in allocation_segments %}
+                                <div class="flex aic gap-2" style="font-size: 12px;">
+                                    <span style="width: 8px; height: 8px; border-radius: 2px; background: {{ segment.color }};"></span>
+                                    <span style="flex: 1;">{{ segment.label }}</span>
+                                    <span class="num muted">{{ segment.percent|floatformat:1 }}%</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid-main" style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div class="card" style="overflow: hidden;">
+                    <div class="flex jcb aic" style="padding: 18px 20px; border-bottom: 1px solid var(--line);">
+                        <div>
+                            <h3 style="font-size: 15px; font-weight: 500;">Holdings</h3>
+                            <p class="muted" style="font-size: 12px;">Live · prices update every couple seconds</p>
+                        </div>
+                        <button class="btn btn-ghost" type="button" style="padding: 6px 10px; font-size: 12px;">Filter</button>
+                    </div>
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Asset</th>
+                                <th style="text-align: right;">Price</th>
+                                <th style="text-align: right;">24h</th>
+                                <th>7d</th>
+                                <th style="text-align: right;">Holdings</th>
+                                <th style="text-align: right;">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for coin in holdings %}
+                                <tr>
+                                    <td>
+                                        <div class="flex aic gap-3">
+                                            <div style="width: 30px; height: 30px; border-radius: 8px; background: {{ coin.color }}; opacity: 0.15; display: flex; align-items: center; justify-content: center;">
+                                                <span class="mono" style="font-size: 11px; font-weight: 600; color: {{ coin.color }};">{{ coin.sym|slice:":2" }}</span>
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 500;">{{ coin.name }}</div>
+                                                <div class="muted mono" style="font-size: 11px;">{{ coin.sym }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="num" style="text-align: right;">{{ coin.display_price }}</td>
+                                    <td style="text-align: right;"><span class="num {% if coin.is_up %}up{% else %}down{% endif %}">{{ coin.display_change }}</span></td>
+                                    <td>
+                                        <svg width="80" height="24" viewBox="0 0 80 24">
+                                            <polyline points="{{ coin.sparkline }}" fill="none" stroke="{% if coin.is_up %}var(--accent){% else %}var(--loss){% endif %}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                                        </svg>
+                                    </td>
+                                    <td class="num" style="text-align: right; color: var(--text-2);">{{ coin.holdings_display }} {{ coin.sym }}</td>
+                                    <td class="num" style="text-align: right;">{{ coin.holding_value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card" style="overflow: hidden; display: flex; flex-direction: column;">
+                    <div class="flex jcb aic" style="padding: 18px 20px; border-bottom: 1px solid var(--line);">
+                        <div class="flex aic gap-2">
+                            <span style="color: var(--accent);">✦</span>
+                            <h3 style="font-size: 15px; font-weight: 500;">Agent journal</h3>
+                        </div>
+                        <span class="badge badge-accent"><span class="live-dot"></span> Live</span>
+                    </div>
+                    <div class="col" style="padding: 16px; gap: 12px; flex: 1;">
+                        {% for entry in journal_entries %}
+                            <div style="padding: 14px; background: var(--bg-2); border-radius: 10px; border-left: 2px solid var(--accent);">
+                                <div class="flex jcb" style="margin-bottom: 6px;">
+                                    <div class="flex aic gap-2">
+                                        <span style="font-size: 12px; font-weight: 600;">{{ entry.agent }}</span>
+                                        <span class="muted mono" style="font-size: 11px;">· {{ entry.action }}</span>
+                                    </div>
+                                    <span class="mono muted" style="font-size: 11px;">{{ entry.time }}</span>
+                                </div>
+                                <p style="font-size: 13px; color: var(--text-2); line-height: 1.5;">{{ entry.text }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-quiet" type="button" style="padding: 12px 16px; border-top: 1px solid var(--line); justify-content: center;">
+                        View full journal
+                    </button>
+                </div>
+            </div>
+
+            <div class="dashboard-grid-bottom" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="card" style="padding: 24px;">
+                    <div class="flex jcb aic" style="margin-bottom: 16px;">
+                        <h3 style="font-size: 15px; font-weight: 500;">Atlas's watchlist</h3>
+                        <span class="badge badge-line">Curated</span>
+                    </div>
+                    <div class="col gap-1">
+                        {% for coin in watchlist %}
+                            <div class="flex aic jcb" style="padding: 10px 0; border-bottom: {% if not forloop.last %}1px solid var(--line){% else %}none{% endif %}; gap: 12px;">
+                                <div class="flex aic gap-3">
+                                    <div style="width: 28px; height: 28px; border-radius: 8px; background: {{ coin.color }}; opacity: 0.15; display: flex; align-items: center; justify-content: center;">
+                                        <span class="mono" style="font-size: 10px; font-weight: 600; color: {{ coin.color }};">{{ coin.sym|slice:":2" }}</span>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 13px; font-weight: 500;">{{ coin.name }}</div>
+                                        <div class="muted mono" style="font-size: 11px;">{{ coin.sym }}</div>
+                                    </div>
+                                </div>
+                                <svg width="70" height="22" viewBox="0 0 70 22">
+                                    <polyline points="{{ coin.sparkline }}" fill="none" stroke="{% if coin.is_up %}var(--accent){% else %}var(--loss){% endif %}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+                                </svg>
+                                <div style="text-align: right;">
+                                    <div class="num">{{ coin.display_price }}</div>
+                                    <div class="num {% if coin.is_up %}up{% else %}down{% endif %}" style="font-size: 11px;">{{ coin.display_change }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 24px; background: linear-gradient(135deg, oklch(0.21 0.04 145), var(--surface));">
+                    <div class="flex aic gap-2" style="margin-bottom: 12px;">
+                        <span style="color: var(--accent);">✦</span>
+                        <h3 style="font-size: 15px; font-weight: 500;">Atlas's take this week</h3>
+                    </div>
+                    <p style="font-size: 14px; line-height: 1.6; color: var(--text-2); margin-bottom: 16px;">
+                        "Macro is calm. Bitcoin dominance is rolling over and L2s are finally catching a bid. I'm rotating ~5% from BTC into ARB, OP, and a new RNDR position. Cassandra has the leash."
+                    </p>
+                    <div class="flex gap-2" style="flex-wrap: wrap; margin-bottom: 16px;">
+                        {% for tag in memo_tags %}
+                            <span class="chip {% if forloop.first or forloop.counter == 2 %}active{% endif %}">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-primary" type="button" style="font-size: 12px;">Read full memo</button>
+                        <button class="btn btn-ghost" type="button" style="font-size: 12px;">Override</button>
+                    </div>
+                </div>
+</div>
+{% endblock %}

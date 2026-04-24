@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account | Nyx{% endblock %}
+
+{% block content %}
+<div class="auth-shell" style="min-height: 100vh; display: grid; grid-template-columns: 1fr 1.1fr; background: var(--bg);">
+    <div class="auth-shell-panel grid-bg" style="position: relative; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--line); overflow: hidden;">
+        <a href="{% url 'landing' %}" class="flex aic gap-2" style="position: relative; z-index: 2;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 20 L4 4 L12 14 L20 4 L20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle cx="12" cy="14" r="2" fill="oklch(0.82 0.19 145)"></circle>
+            </svg>
+            <span style="font-weight: 600; font-size: 16px;">Nyx</span>
+        </a>
+        <div style="position: relative; z-index: 2; max-width: 440px;">
+            <div style="margin-bottom: 24px; color: var(--accent); font-size: 28px;">✦</div>
+            <p style="font-size: 26px; line-height: 1.25; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 24px;">
+                "I checked Nyx for the first time in three weeks. It had quietly rebalanced four times, dodged a 12% chop, and the journal explained every move."
+            </p>
+            <div class="flex aic gap-3">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, oklch(0.6 0.18 145), oklch(0.4 0.12 240));"></div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 500;">Maya R.</div>
+                    <div class="muted" style="font-size: 12px;">Software engineer · Nyx user since '25</div>
+                </div>
+            </div>
+        </div>
+        <div style="position: relative; z-index: 2; display: flex; gap: 20px; font-size: 12px; color: var(--text-3); flex-wrap: wrap;">
+            <span>SOC 2 Type II</span><span>Insured to $250K</span><span>Cold storage</span>
+        </div>
+    </div>
+    <div style="padding: 48px 64px; display: flex; align-items: center; justify-content: center;">
+        <div class="page-enter" style="width: 100%; max-width: 560px;">
+            <div class="flex aic gap-2" style="margin-bottom: 32px;">
+                <div data-progress="0" style="flex: 1; height: 3px; border-radius: 2px; background: var(--accent);"></div>
+                <div data-progress="1" style="flex: 1; height: 3px; border-radius: 2px; background: var(--line);"></div>
+                <div data-progress="2" style="flex: 1; height: 3px; border-radius: 2px; background: var(--line);"></div>
+                <div data-progress="3" style="flex: 1; height: 3px; border-radius: 2px; background: var(--line);"></div>
+            </div>
+
+            <form id="signup-form" method="post">
+                {% csrf_token %}
+                {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                {% if form.non_field_errors %}
+                    <div class="card" style="padding: 12px 14px; border-color: var(--loss); color: var(--loss); margin-bottom: 18px;">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+
+                <section data-step="0">
+                    <h1 style="font-size: 32px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 8px;">Create your account</h1>
+                    <p class="muted" style="margin-bottom: 32px;">Step 1 of 4 — under a minute, we promise.</p>
+                    <div class="col gap-4">
+                        <div>
+                            <label class="label" for="{{ form.full_name.id_for_label }}">Full name</label>
+                            {{ form.full_name }}
+                            {% for error in form.full_name.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+                        </div>
+                        <div>
+                            <label class="label" for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email }}
+                            {% for error in form.email.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+                        </div>
+                        <div>
+                            <label class="label" for="{{ form.password1.id_for_label }}">Password</label>
+                            {{ form.password1 }}
+                            {% for error in form.password1.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+                        </div>
+                        <div>
+                            <label class="label" for="{{ form.password2.id_for_label }}">Confirm password</label>
+                            {{ form.password2 }}
+                            {% for error in form.password2.errors %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endfor %}
+                        </div>
+                    </div>
+                </section>
+
+                <section data-step="1" style="display: none;">
+                    <h1 style="font-size: 32px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 8px;">What's the goal?</h1>
+                    <p class="muted" style="margin-bottom: 32px;">Atlas uses this to set your portfolio's tilt.</p>
+                    <div class="col gap-2" id="goal-options">
+                        <button type="button" data-goal="growth" style="text-align: left; padding: 18px; border-radius: 12px; border: 1px solid var(--accent); background: var(--accent-soft);">
+                            <div class="flex aic jcb"><span style="font-weight: 500; font-size: 15px;">Grow my money</span><span style="color: var(--accent);">✓</span></div>
+                            <p class="muted" style="font-size: 13px; margin-top: 4px;">Long-term, ride the cycle. Higher highs, deeper drawdowns.</p>
+                        </button>
+                        <button type="button" data-goal="income" style="text-align: left; padding: 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2);">
+                            <div class="flex aic jcb"><span style="font-weight: 500; font-size: 15px;">Earn yield</span></div>
+                            <p class="muted" style="font-size: 13px; margin-top: 4px;">Stable returns from staking, lending, and market-neutral strategies.</p>
+                        </button>
+                        <button type="button" data-goal="preserve" style="text-align: left; padding: 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2);">
+                            <div class="flex aic jcb"><span style="font-weight: 500; font-size: 15px;">Preserve &amp; beat inflation</span></div>
+                            <p class="muted" style="font-size: 13px; margin-top: 4px;">Conservative tilt, mostly BTC and stablecoins.</p>
+                        </button>
+                        <button type="button" data-goal="experiment" style="text-align: left; padding: 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2);">
+                            <div class="flex aic jcb"><span style="font-weight: 500; font-size: 15px;">I'm here to experiment</span></div>
+                            <p class="muted" style="font-size: 13px; margin-top: 4px;">Smaller allocations to thematic baskets, more frequent rotation.</p>
+                        </button>
+                    </div>
+                </section>
+
+                <section data-step="2" style="display: none;">
+                    <h1 style="font-size: 32px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 8px;">How much risk?</h1>
+                    <p class="muted" style="margin-bottom: 32px;">You can change this any time. Cassandra will hold you to it.</p>
+                    <div class="three-col-grid" id="risk-options" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <button type="button" data-risk="conservative" style="text-align: left; padding: 20px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2);">
+                            <div style="font-weight: 500; font-size: 15px; margin-bottom: 12px;">Conservative</div>
+                            <div class="col gap-1">
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Exp. annual return</span><span class="num up">8–15%</span></div>
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Max drawdown</span><span class="num down">−12%</span></div>
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Holdings</span><span style="font-size: 12px;">BTC, ETH, stables</span></div>
+                            </div>
+                        </button>
+                        <button type="button" data-risk="balanced" style="text-align: left; padding: 20px; border-radius: 12px; border: 1px solid var(--accent); background: var(--accent-soft);">
+                            <div style="font-weight: 500; font-size: 15px; margin-bottom: 12px;">Balanced</div>
+                            <div class="col gap-1">
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Exp. annual return</span><span class="num up">20–40%</span></div>
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Max drawdown</span><span class="num down">−25%</span></div>
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Holdings</span><span style="font-size: 12px;">BTC, ETH, top L1s</span></div>
+                            </div>
+                        </button>
+                        <button type="button" data-risk="aggressive" style="text-align: left; padding: 20px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2);">
+                            <div style="font-weight: 500; font-size: 15px; margin-bottom: 12px;">Aggressive</div>
+                            <div class="col gap-1">
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Exp. annual return</span><span class="num up">60–120%</span></div>
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Max drawdown</span><span class="num down">−45%</span></div>
+                                <div class="flex aic jcb" style="font-size: 12px;"><span class="muted">Holdings</span><span style="font-size: 12px;">Mid-caps, narratives</span></div>
+                            </div>
+                        </button>
+                    </div>
+                </section>
+
+                <section data-step="3" style="display: none;">
+                    <h1 style="font-size: 32px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 8px;">Make your first deposit</h1>
+                    <p class="muted" style="margin-bottom: 32px;">Start small. You can withdraw any time without penalty.</p>
+                    <div style="background: var(--bg-2); border: 1px solid var(--line); padding: 24px; border-radius: 12px; margin-bottom: 16px;">
+                        <div class="muted uppercase" style="margin-bottom: 8px;">Initial deposit</div>
+                        <div class="flex aic gap-1" style="margin-bottom: 16px;">
+                            <span id="deposit-display" class="num" style="font-size: 56px; letter-spacing: -0.03em;">$250</span>
+                        </div>
+                        <input id="deposit-slider" type="range" min="50" max="5000" step="50" value="250" style="width: 100%; accent-color: oklch(0.82 0.19 145);">
+                        <div class="flex aic gap-2" style="margin-top: 16px; flex-wrap: wrap;">
+                            <button type="button" class="chip" data-deposit="50">$50</button>
+                            <button type="button" class="chip" data-deposit="100">$100</button>
+                            <button type="button" class="chip" data-deposit="250">$250</button>
+                            <button type="button" class="chip" data-deposit="500">$500</button>
+                            <button type="button" class="chip" data-deposit="1000">$1000</button>
+                        </div>
+                    </div>
+                    <div class="col gap-2">
+                        <div style="padding: 16px; border-radius: 10px; border: 1px solid var(--line); display: flex; align-items: center; gap: 14px;">
+                            <span style="color: var(--text-3);">$</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; font-size: 14px;">Debit / credit card</div>
+                                <div class="muted" style="font-size: 12px;">Instant · 1.5% fee</div>
+                            </div>
+                        </div>
+                        <div style="padding: 16px; border-radius: 10px; border: 1px solid var(--line); display: flex; align-items: center; gap: 14px;">
+                            <span style="color: var(--text-3);">◎</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; font-size: 14px;">Bank transfer (ACH)</div>
+                                <div class="muted" style="font-size: 12px;">1–2 days · Free</div>
+                            </div>
+                        </div>
+                        <div style="padding: 16px; border-radius: 10px; border: 1px solid var(--accent); display: flex; align-items: center; gap: 14px; background: var(--accent-soft);">
+                            <span style="color: var(--accent);">⌘</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500; font-size: 14px;">Crypto wallet</div>
+                                <div class="muted" style="font-size: 12px;">Network fees only</div>
+                            </div>
+                            <span style="color: var(--accent);">✓</span>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="flex jcb" style="margin-top: 32px;">
+                    <button id="back-button" class="btn btn-quiet" type="button">Cancel</button>
+                    <button id="next-button" class="btn btn-primary" type="button">
+                        Continue
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M13 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                    <button id="submit-button" class="btn btn-primary" type="submit" style="display: none;">
+                        Activate agents
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M13 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (() => {
+        const sections = Array.from(document.querySelectorAll("[data-step]"));
+        const progress = Array.from(document.querySelectorAll("[data-progress]"));
+        const back = document.getElementById("back-button");
+        const next = document.getElementById("next-button");
+        const submit = document.getElementById("submit-button");
+        const goalInput = document.getElementById("id_goal");
+        const riskInput = document.getElementById("id_risk_profile");
+        const depositInput = document.getElementById("id_initial_deposit");
+        const goalButtons = Array.from(document.querySelectorAll("[data-goal]"));
+        const riskButtons = Array.from(document.querySelectorAll("[data-risk]"));
+        const depositButtons = Array.from(document.querySelectorAll("[data-deposit]"));
+        const depositSlider = document.getElementById("deposit-slider");
+        const depositDisplay = document.getElementById("deposit-display");
+        let step = 0;
+
+        function updateStep() {
+            sections.forEach((section, index) => {
+                section.style.display = index === step ? "block" : "none";
+            });
+            progress.forEach((bar, index) => {
+                bar.style.background = index <= step ? "var(--accent)" : "var(--line)";
+            });
+            back.textContent = step === 0 ? "Cancel" : "Back";
+            next.style.display = step === sections.length - 1 ? "none" : "inline-flex";
+            submit.style.display = step === sections.length - 1 ? "inline-flex" : "none";
+        }
+
+        function styleSelectable(buttons, activeValue, attribute) {
+            buttons.forEach((button) => {
+                const selected = button.dataset[attribute] === activeValue;
+                button.style.borderColor = selected ? "var(--accent)" : "var(--line)";
+                button.style.background = selected ? "var(--accent-soft)" : "var(--bg-2)";
+                const check = button.querySelector(".choice-check");
+                if (check) {
+                    check.style.visibility = selected ? "visible" : "hidden";
+                }
+            });
+        }
+
+        function updateDeposit(value) {
+            depositInput.value = value;
+            depositSlider.value = value;
+            depositDisplay.textContent = `$${value}`;
+        }
+
+        goalButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                goalInput.value = button.dataset.goal;
+                styleSelectable(goalButtons, goalInput.value, "goal");
+            });
+        });
+
+        riskButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                riskInput.value = button.dataset.risk;
+                styleSelectable(riskButtons, riskInput.value, "risk");
+            });
+        });
+
+        depositButtons.forEach((button) => {
+            button.addEventListener("click", () => updateDeposit(button.dataset.deposit));
+        });
+
+        depositSlider.addEventListener("input", (event) => updateDeposit(event.target.value));
+
+        back.addEventListener("click", () => {
+            if (step === 0) {
+                window.location.href = "{% url 'landing' %}";
+                return;
+            }
+            step -= 1;
+            updateStep();
+        });
+
+        next.addEventListener("click", () => {
+            if (step < sections.length - 1) {
+                step += 1;
+                updateStep();
+            }
+        });
+
+        updateDeposit(depositInput.value || 250);
+        updateStep();
+    })();
+</script>
+{% endblock %}
