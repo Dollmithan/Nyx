@@ -62,7 +62,7 @@ def database_config():
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-only-change-me")
 DEBUG = env_bool("DEBUG", True)
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".up.railway.app"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".up.railway.app", "healthcheck.railway.app"]
 for host in env_list("ALLOWED_HOSTS"):
     if host not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(host)
